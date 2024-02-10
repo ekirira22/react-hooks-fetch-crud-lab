@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+const url = "http://localhost:4000/questions"
+
 function QuestionForm(props) {
   const [formData, setFormData] = useState({
     prompt: "",
@@ -19,9 +21,31 @@ function QuestionForm(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    console.log(formData);
+      //Add it to state
+    props.onAdd(formData)
+      //Update DB
+    const updateObject = JSON.stringify({
+        prompt : formData.prompt,
+        answers : [
+          formData.answer1,
+          formData.answer2,
+          formData.answer3,
+          formData.answer4
+        ],
+        correctIndex : formData.correctIndex
+      })
+    
+    fetchAndUpdate(url,"POST",updateObject)
   }
 
+  async function fetchAndUpdate(url,method,obj){
+    const dataObject = {
+      method : method,
+      headers : {"Content-Type": "application/json" },
+      body : obj
+    }
+    await fetch(url,dataObject)
+  }
   return (
     <section>
       <h1>New Question</h1>
